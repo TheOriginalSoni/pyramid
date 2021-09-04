@@ -154,5 +154,3 @@ for j in sorted(list(anagrammable_words_plus2)):
 	f.write(f"{j}\n")
 	pass
 f.close()
-
-

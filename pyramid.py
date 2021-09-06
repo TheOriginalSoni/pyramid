@@ -1,7 +1,8 @@
 import itertools
+from collections import Counter
 
 allwords=[]
-f = open("/home/soni/coding/pyramid/enablewordlist.txt", "r")
+f = open("/home/soni/coding/pyramid/pyramid/words.txt", "r")
 
 max_len = 0
 for x in f:
@@ -118,17 +119,17 @@ def list_anagrams(wordsbylen,sorted_letters_by_len,n):
 		ans.update(ang_s)
 	return ans
 
-anagrammable_words = list_anagrams(wordsbylen,sorted_letters_by_len,0)
+anagrammable_words_plus0 = list_anagrams(wordsbylen,sorted_letters_by_len,0)
 
-print(f"Anagrammable = {len(anagrammable_words)}")
+print(f"Anagrammable = {len(anagrammable_words_plus0)}")
 
 anagrammable_words_plus1 = list_anagrams(wordsbylen,sorted_letters_by_len,1)
 
 print(f"Anagrammable + 1 = {len(anagrammable_words_plus1)}")
 
-anagrammable_words_plus2 = list_anagrams(wordsbylen,sorted_letters_by_len,2)
+#anagrammable_words_plus2 = list_anagrams(wordsbylen,sorted_letters_by_len,2)
 
-print(f"Anagrammable + 2 = {len(anagrammable_words_plus2)}")
+#print(f"Anagrammable + 2 = {len(anagrammable_words_plus2)}")
 
 def filter_anagrams(words,yn,n):
 	fs = set()
@@ -149,8 +150,92 @@ def filter_anagrams(words,yn,n):
 				fs.add(w)
 	return fs
 
+def filter_doubleletters(words,yn):
+	fs = set()
+	for word in words:
+		a = [''.join(g) for _, g in itertools.groupby(word)]
+		b = sum(list(map(lambda x:len(x)-1,a)))
+		if yn:
+			if(b>=1):
+				fs.add(word)
+		else:
+			if(not b>=1):
+				fs.add(word)
+	return fs
+
+def filter_doubleletters_2diff(words,yn):
+	fs = set()
+	for word in words:
+		a = [''.join(g) for _, g in itertools.groupby(word)]
+		b = len(Counter(''.join(list(map(lambda x: x[0] if (len(x)>=2) else "",a)))))
+		if yn:
+			if(b>=2):
+				fs.add(word)
+		else:
+			if(not b>=2):
+				fs.add(word)
+	return fs
+
+def filter_doubleletters_2same(words,yn):
+	fs = set()
+	for word in words:
+		a = [''.join(g) for _, g in itertools.groupby(word)]
+		b = dict(Counter(''.join(list(map(lambda x: x if (len(x)>=2) else "",a)))))
+		c = sum(map(lambda x: 1 if b.get(x)>=4 else 0,b))
+		if yn:
+			if(c>=1):
+				fs.add(word)
+		else:
+			if(not c>=1):
+				fs.add(word)
+	return fs
+
+print(filter_doubleletters(allwords,1))
+
+print(filter_doubleletters_2diff(allwords,1))
+
+print(filter_doubleletters_2same(allwords,1))
+
+def filter_contains(words,chars):
+	fs = set()
+	for word in words:
+		if (word.find(chars) != 1):
+			fs.add(word)
+	return fs
+
+def filter_num_consonants(words, lower, upper):
+	fs = set()
+	for word in words:
+		numcon = len(Counter(re.sub('[aeiou]', '', word, flags=re.I)))
+		if numcon<= upper and numcon>=lower:
+			fs.add(word)
+	return fs
+
+def filter_num_vowels(words, lower, upper):
+	fs = set()
+	for word in words:
+		numcon = len(Counter(re.sub('[^aeiou]', '', word, flags=re.I)))
+		if numcon<= upper and numcon>=lower:
+			fs.add(word)
+	return fs
+
+def filter_num_chars(words, lower, upper):
+	fs = set()
+	for word in words:
+		numcon = len(Counter(word))
+		if numcon<= upper and numcon>=lower:
+			fs.add(word)
+	return fs
+
+def filter_endswith(words, chars):
+	fs = set()
+	for word in words:
+		if 	word.endswith(chars):
+			fs.add(word)
+	return fs
+
 f = open("/home/soni/coding/pyramid/words_anagram.txt", "a")
-for j in sorted(list(anagrammable_words_plus2)):
+for j in sorted(list(anagrammable_words_plus1)):
 	f.write(f"{j}\n")
 	pass
 f.close()
